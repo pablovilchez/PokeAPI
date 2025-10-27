@@ -1,0 +1,30 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev", "--", "--host"]
+    environment:
+      - VITE_API_URL=http://auth-service:4000
+    depends_on:
+      - auth-service
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "4000:4000"
+    environment:
+      - CLIENT_ID=my-client-id
+      - CLIENT_SECRET=my-client-secret
+      - REDIRECT_URI=http://localhost:5173/callback
+      - AUTH_URL=https://accounts.google.com/o/oauth2/v2/auth
+      - TOKEN_URL=https://oauth2.googleapis.com/token
+      - SCOPE=openid email profile
+    volumes:
+      - ./auth-service:/app
+      - /app/node_modules
+    # Use npm start (node server.js) inside the container to avoid relying on devDependency 'nodemon'
+    command: ["npm", "start"]

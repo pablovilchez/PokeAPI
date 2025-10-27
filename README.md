@@ -1,1 +1,4 @@
 # PokeAPI
+
+docker-compose up
+
